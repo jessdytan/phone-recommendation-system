@@ -487,6 +487,9 @@ plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.show()
 
+print(f"Final RMSE Train: {history.history['root_mean_squared_error'][-1]:.4f}")
+print(f"Final RMSE Test: {history.history['val_root_mean_squared_error'][-1]:.4f}")
+
 cellphone_df = cellphone_new
 df = pd.read_csv('/content/dataset/cellphones ratings.csv')
 
