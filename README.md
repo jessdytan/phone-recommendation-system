@@ -298,10 +298,80 @@ Pada tahap ini, dikembangkan dua jenis sistem rekomendasi untuk memberikan saran
 ## Evaluation
 Tahap evaluasi bertujuan untuk mengukur kinerja sistem rekomendasi ponsel yang telah dibangun, khususnya dalam kemampuannya memprediksi preferensi pengguna secara akurat. Evaluasi ini penting untuk memahami sejauh mana solusi yang diusulkan berhasil menjawab permasalahan dan mencapai tujuan yang telah ditetapkan.
 
-### Metrik yang Digunakan:
+### Content-Based Filtering
+#### Metrik Evaluasi
+Untuk mengukur kinerja dari sistem rekomendasi content-based filtering, akan digunakan beberapa metrik evaluasi. Metrik ini membantu mengevaluasi kualitas rekomendasi yang dihasilkan, terutama dari segi relevansi dan urutan.
+ 1. Precision@k
+
+     **Precision@k** mengukur proporsi item yang relevan di antara top-\(k\) item yang direkomendasikan.
+    - Formula:
+      
+    $\displaystyle \text{Precision@k} = \frac{\text{Jumlah item relevan dalam top-}k}{k}$
+    - Cara Kerja:
+    Precision@k menghitung seberapa banyak dari \(k\) rekomendasi teratas yang benar-benar relevan untuk pengguna. Nilai precision yang tinggi menunjukkan bahwa sistem memberikan rekomendasi yang akurat.
+
+
+3. Recall@k
+
+    **Recall@k** mengukur proporsi item relevan yang berhasil ditemukan dalam \(k\) rekomendasi.
+    
+    - Formula:
+   
+    $\displaystyle \text{Recall@k} = \frac{\text{Jumlah item relevan dalam top-}k}{\text{Jumlah total item relevan}}$
+    - Cara Kerja:
+    Recall@k fokus pada seberapa banyak item relevan yang ditemukan oleh sistem dari semua item relevan yang tersedia. Nilai recall tinggi menunjukkan sistem mampu mencakup banyak item relevan.
+
+
+4. F1 Score@k
+
+    **F1 Score@k** merupakan harmonic mean dari Precision@k dan Recall@k, memberikan keseimbangan antara keduanya.
+    
+    - Formula:
+   
+    $\displaystyle\text{F1@k} = 2 \cdot \frac{\text{Precision@k} \cdot \text{Recall@k}}{\text{Precision@k} + \text{Recall@k}}$
+    
+    - Cara Kerja:
+    F1 Score digunakan ketika kita ingin mempertimbangkan baik ketepatan (precision) maupun kelengkapan (recall) dari hasil rekomendasi. Skor ini berguna jika ada trade-off antara precision dan recall.
+
+5. Normalized Discounted Cumulative Gain (NDCG@k)
+
+    **NDCG@k** digunakan untuk mengukur kualitas urutan rekomendasi dengan mempertimbangkan posisi item relevan. Semakin tinggi posisi item relevan, semakin besar pengaruhnya terhadap skor.
+    - Formula:
+      
+        $\displaystyle\text{DCG@k} = \sum_{i=1}^{k} \frac{2^{rel_i} - 1}{\log_2(i + 1)}$
+      
+        $\displaystyle\text{IDCG@k} = \text{DCG dari urutan ideal relevansi}$
+      
+        $\displaystyle\text{NDCG@k} = \frac{\text{DCG@k}}{\text{IDCG@k}}$
+
+    - Cara Kerja:
+    NDCG menghitung seberapa baik urutan rekomendasi berdasarkan relevansi item yang muncul pada posisi tertentu. Sistem yang merekomendasikan item relevan lebih awal mendapatkan skor lebih tinggi.
+
+#### Hasil Proyek
+Untuk pengujian ini, kami mengambil contoh skenario di mana model memberikan rekomendasi berdasarkan query "iPhone 13 Mini". Daftar item yang direkomendasikan oleh model adalah sebagai berikut:
+```
+recommended_items = ['iPhone 13', 'iPhone SE (2022)', 'iPhone XR', 'iPhone 13', 'iPhone 13']
+```
+
+Sementara itu, daftar item yang relevan (item "true" yang seharusnya direkomendasikan) adalah:
+```
+true_items = ['iPhone 13', 'iPhone 13 Pro', 'iPhone 12 Mini']
+```
+
+Berdasarkan perbandingan antara recommended_items dan true_items, hasil metrik evaluasi adalah sebagai berikut:
+- Precision@5: 0.4
+- Recall@5: 0.6666666666666666
+- F1 Score@5: 0.5
+- NDCG@5: 0.671386072533041
+
+Secara keseluruhan, hasil ini memberikan wawasan awal tentang kinerja model rekomendasi. Meskipun model berhasil mengidentifikasi sebagian besar item relevan, terdapat peluang untuk meningkatkan presisi rekomendasi dan penempatan item relevan di posisi yang lebih tinggi. 
+
+### Collaborative-Based Filtering:
+Untuk mengukur kinerja sistem rekomendasi berbasis collaborative filtering, digunakan beberapa metrik evaluasi. Metrik-metrik ini bertujuan untuk menilai kualitas rekomendasi yang dihasilkan, khususnya dari segi relevansi item yang direkomendasikan dan urutan penyajiannya. Dengan menggunakan metrik evaluasi ini, kita dapat mengetahui     seberapa efektif sistem dalam memberikan rekomendasi yang sesuai dengan preferensi pengguna.
 
 - **RMSE**
   RMSE adalah metrik standar untuk mengukur rata-rata besarnya kesalahan antara nilai yang diprediksi oleh model dengan nilai aktual. Dalam konteks sistem rekomendasi, RMSE mengukur seberapa jauh rata-rata prediksi rating model dari rating yang sebenarnya diberikan oleh pengguna.
+  
   $\displaystyle \text{RMSE} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2}$
 
   Di mana:
@@ -326,6 +396,9 @@ Tahap evaluasi bertujuan untuk mengukur kinerja sistem rekomendasi ponsel yang t
 |-----|------|
 | Train| 0.1481 |
 | Test | 0.1621 |
+
+Nilai RMSE Train sebesar **0.1481** menunjukkan kemampuan model yang sangat baik dalam mempelajari data pelatihan. RMSE Test sebesar **0.1621** mengindikasikan kinerja generalisasi yang kuat pada data baru, dengan selisih minimal dari RMSE Train, yang menandakan tidak adanya overfitting signifikan.
+Dengan RMSE Test yang rendah, dapat disimpulkan bahwa model Collaborative Filtering ini **efektif** dan **akurat** dalam memprediksi preferensi pengguna dan memberikan rekomendasi yang relevan.
 
 
 ### Evaluasi Terhadap Business Understanding
