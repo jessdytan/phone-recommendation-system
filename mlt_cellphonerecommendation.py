@@ -360,6 +360,53 @@ def model_recommendations(model, similarity_data=cosine_sim_df, items=data[['mod
 
 model_recommendations('iPhone 13 Mini')
 
+"""Evaluasi Model Rekomendasi"""
+
+def precision_at_k(recommended_items, true_items, k):
+    recommended_at_k = recommended_items[:k]
+    relevant = set(recommended_at_k) & set(true_items)
+    return len(relevant) / k
+
+def recall_at_k(recommended_items, true_items, k):
+    recommended_at_k = recommended_items[:k]
+    relevant = set(recommended_at_k) & set(true_items)
+    return len(relevant) / len(true_items) if true_items else 0
+
+def f1_score_at_k(recommended_items, true_items, k):
+    precision = precision_at_k(recommended_items, true_items, k)
+    recall = recall_at_k(recommended_items, true_items, k)
+    if precision + recall == 0:
+        return 0
+    return 2 * (precision * recall) / (precision + recall)
+
+def ndcg_at_k(recommended_items, true_items, k):
+    dcg = 0.0
+    for i, item in enumerate(recommended_items[:k]):
+        rel = 1 if item in true_items else 0
+        dcg += rel / np.log2(i + 2)
+
+    # Ideal DCG (IDCG)
+    ideal_rels = [1] * min(len(true_items), k)
+    idcg = sum(rel / np.log2(i + 2) for i, rel in enumerate(ideal_rels))
+
+    return dcg / idcg if idcg > 0 else 0
+
+"""Ubah hasil rekomendasi menggunakan content-based filtering sebelumnya menjadi list"""
+
+recommended_df = model_recommendations('iPhone 13 Mini', k=5)
+recommended_items = recommended_df['model'].tolist()
+
+"""Membuat Ground Truth (seperti data relevansi atau preferensi)"""
+
+true_items = ['iPhone 13', 'iPhone 13 Pro', 'iPhone 12 Mini']  # relevan item
+
+"""Menjalankan fungsi untuk menghitung metrik evaluasinya"""
+
+print("Precision@5:", precision_at_k(recommended_items, true_items, 5))
+print("Recall@5:", recall_at_k(recommended_items, true_items, 5))
+print("F1 Score@5:", f1_score_at_k(recommended_items, true_items, 5))
+print("NDCG@5:", ndcg_at_k(recommended_items, true_items, 5))
+
 """ ## 6. Building Recommendation System Collaborative Filtering"""
 
 df = rating
